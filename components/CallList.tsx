@@ -1,23 +1,26 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import { useGetCalls } from "@/hooks/useGetCalls";
-import { useRouter } from "next/navigation";
-import { Call, CallRecording } from "@stream-io/video-react-sdk";
-import MeetingCard from "./MeetingCard";
-import Loader from "./Loader";
+'use client';
 
-const CallList = ({ type }: { type: "ended" | "upcoming" | "recordings" }) => {
-  const { endedCalls, upcomingCalls, callRecordings, loading } = useGetCalls();
+import { Call, CallRecording } from '@stream-io/video-react-sdk';
+
+import Loader from './Loader';
+import { useGetCalls } from '@/hooks/useGetCalls';
+import MeetingCard from './MeetingCard';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+
+const CallList = ({ type }: { type: 'ended' | 'upcoming' | 'recordings' }) => {
   const router = useRouter();
+  const { endedCalls, upcomingCalls, callRecordings, loading } =
+    useGetCalls();
   const [recordings, setRecordings] = useState<CallRecording[]>([]);
 
   const getCalls = () => {
     switch (type) {
-      case "ended":
+      case 'ended':
         return endedCalls;
-      case "recordings":
-        return callRecordings;
-      case "upcoming":
+      case 'recordings':
+        return recordings;
+      case 'upcoming':
         return upcomingCalls;
       default:
         return [];
@@ -26,14 +29,14 @@ const CallList = ({ type }: { type: "ended" | "upcoming" | "recordings" }) => {
 
   const getNoCallsMessage = () => {
     switch (type) {
-      case "ended":
-        return "No Previous calls";
-      case "recordings":
-        return "No recordings available";
-      case "upcoming":
-        return "No upcoming calls";
+      case 'ended':
+        return 'No Previous Calls';
+      case 'upcoming':
+        return 'No Upcoming Calls';
+      case 'recordings':
+        return 'No Recordings';
       default:
-        return "";
+        return '';
     }
   };
 
@@ -55,16 +58,16 @@ const CallList = ({ type }: { type: "ended" | "upcoming" | "recordings" }) => {
     }
   }, [type, callRecordings]);
 
+  if (loading) return <Loader />;
+
   const calls = getCalls();
   const noCallsMessage = getNoCallsMessage();
-
-  if(loading) return <Loader />
 
   return (
     <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
       {calls && calls.length > 0 ? (
         calls.map((meeting: Call | CallRecording) => (
-            <MeetingCard
+          <MeetingCard
             key={(meeting as Call).id}
             icon={
               type === 'ended'
